@@ -6,9 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.marindulja.therapism_mobile.retrofit.RetrofitClient
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import java.io.IOException
 
 sealed class AuthState {
     object Idle : AuthState()
@@ -25,9 +25,9 @@ class AuthViewModel : ViewModel() {
             authState = AuthState.Loading
             try {
                 val response = if (isLogin) {
-                    RetrofitClient.authService.authenticate(AuthRequest(email, password))
+                    RetrofitClient.createService(AuthService::class.java).authenticate(AuthRequest(email, password))
                 } else {
-                    RetrofitClient.authService.register(RegisterRequest(role, email, password))
+                    RetrofitClient.createService(AuthService::class.java).register(RegisterRequest(role, email, password))
                 }
                 authState = AuthState.Success(
                     if (isLogin) "Login successful! Welcome back."

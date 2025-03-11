@@ -1,5 +1,7 @@
 package com.marindulja.therapism_mobile
 
+import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,17 +24,24 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.marindulja.therapism_mobile.auth.AuthScreen
 import com.marindulja.therapism_mobile.auth.AuthViewModel
+import com.marindulja.therapism_mobile.retrofit.RetrofitClient
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge() // Ensure this method is properly defined elsewhere in the project.
+        val refreshToken = retrieveStoredRefreshToken(applicationContext)
+        RetrofitClient.initialize(this, refreshToken)
         setContent {
             AppNavigation()
         }
     }
 }
 
+private fun retrieveStoredRefreshToken(context: Context): String {
+    val sharedPreferences = context.getSharedPreferences("prefs", MODE_PRIVATE)
+    return sharedPreferences?.getString("REFRESH_TOKEN", "").orEmpty()
+}
 
 
 @Preview(showBackground = true)
