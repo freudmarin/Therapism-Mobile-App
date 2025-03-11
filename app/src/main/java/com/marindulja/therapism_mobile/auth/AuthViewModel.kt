@@ -1,5 +1,6 @@
 package com.marindulja.therapism_mobile.auth
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -33,17 +34,25 @@ class AuthViewModel : ViewModel() {
                     else "Registration successful! You can now log in."
                 )
             } catch (e: HttpException) {
-                authState = AuthState.Error(when (e.code()) {
-                    400 -> "Bad request. Please check your input."
-                    401 -> "Unauthorized. Please check your email and password."
-                    404 -> "Server not found. Try again later."
-                    else -> "An error occurred (${e.code()}). Please try again."
-                })
-            } catch (e: IOException) {
-                authState = AuthState.Error("Please check your internet connection.")
+                // Internal error handling (optional)
+                Log.e("AuthError", "HTTP exception occurred", e) // Logs full error for debugging
+
+                // Generic messages for the user
+                val errorMessage = when (e.code()) {
+                    400 -> "Invalid input. Please check the details provided."
+                    401 -> "Authentication failed. Please check your credentials."
+                    404 -> "Service unavailable. Please try again later."
+                    403 -> "Access denied. Please contact the administrator."
+                    else -> "Something went wrong. Please try again."
+                }
+
+                authState = AuthState.Error(errorMessage) // Only user-friendly text is displayed
             } catch (e: Exception) {
-                authState = AuthState.Error("Something went wrong. Please try again.")
+                // Catch other exceptions and provide a generic fallback message for the user
+                Log.e("AuthError", "Unexpected error occurred", e) // Logs the unexpected error
+                authState = AuthState.Error("An unexpected error occurred. Please try again.")
             }
+
         }
     }
 }
