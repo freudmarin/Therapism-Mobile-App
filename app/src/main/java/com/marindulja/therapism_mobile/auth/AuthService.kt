@@ -8,16 +8,16 @@ import retrofit2.http.POST
 
 // Retrofit API interface
 interface AuthService {
-    @POST("/auth/authenticate")
+    @POST("auth/authenticate")
     suspend fun authenticate(@Body request: AuthRequest): AuthResponse
 
-    @POST("/auth/register")
+    @POST("auth/register")
     suspend fun register(@Body request: RegisterRequest): AuthResponse
 }
 
 data class AuthRequest(val email: String, val password: String)
 data class RegisterRequest(val role: String, val email: String, val password: String)
-data class AuthResponse(val token: String, val user: User)
+data class AuthResponse(val user: User, val accessToken: String, val refreshToken: String)
 
 object RetrofitClient {
     private const val BASE_URL = "http://10.0.2.2:8080/api/"
